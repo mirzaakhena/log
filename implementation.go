@@ -28,7 +28,7 @@ func setJSONFormat() {
 	}
 }
 
-func setNestedFormat() {
+func setSimpleFormat() {
 	format = &nested.Formatter{
 		NoColors:        true,
 		HideKeys:        true,

@@ -55,15 +55,24 @@ This is the sample output format
 {"func":"main.main:19","level":"warning","msg":"world","rpcid":"1iqnii541bXcCIXkbJ3OMvxrx6R","time":"1014 095518.829"}
 {"func":"main.main:20","level":"error","msg":"my name is mirza","rpcid":"1iqnii541bXcCIXkbJ3OMvxrx6R","time":"1014 095518.829"}
 ```
-From that output we can see the rpcid is same. We can use this rpcid information to do grep from console and by collect the same rpcid we can trace it easily
+From that output we can see the rpcid is same. We can use this rpcid information to do grep from console and by collect the same rpcid we can trace it easily. We also print the method call complete with line of code.
 
 ## Change the output format
-Currently we have two format. Nested format and JSON format. Call this method before we call the first log. The default one is in JSON format
+Currently we have two format JSON format and Simple format. To change the format you can call this method before we call the first log. The default one is in JSON format
 ```
-log.UseNestedFormat()
-// or
 log.UseJSONFormat()
+// or
+log.UseSimpleFormat()
 ```
+
+The sample output for Simple format is
+```
+1014 095518.829 [INFO] [1iqnii541bXcCIXkbJ3OMvxrx6R] [main.main:15] hello
+1014 095518.829 [WARN] [1iqnii541bXcCIXkbJ3OMvxrx6R] [main.main:16] world
+1014 095518.829 [ERRO] [1iqnii541bXcCIXkbJ3OMvxrx6R] [main.main:17] my name is mirza
+```
+
+
 
 ## Replace The RPCID Generator
 Currently rpcid is generate by `https://github.com/segmentio/ksuid`

@@ -28,8 +28,8 @@ func UseJSONFormat() {
 	setJSONFormat()
 }
 
-func UseNestedFormat() {
-	setNestedFormat()
+func UseSimpleFormat() {
+	setSimpleFormat()
 }
 
 func SetRpcIDFunc(f func() string) {
