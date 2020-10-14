@@ -8,9 +8,9 @@ This is the basic default use of the log out of the box
 package main
 
 import (
-	"context"
+  "context"
 
-	"github.com/mirzaakhena/log"
+  "github.com/mirzaakhena/log"
 )
 
 func main() {
@@ -76,12 +76,24 @@ log.SetRpcIDFunc(func() string {
 ```
 
 ## Use the rotate file 
+If we want to have log file we can enable it by call this before first log is called
 ```
 path := "." // the current directory
 filename := "logfilename"
 maxAgeOfLogInDays := 7
 log.UseRotateFile(path, filename, maxAgeOfLogInDays)
+log.Info(context.Background(), "hello")
 ```
+The output file will be like this
+```
+projectdir
+  +-logs
+  | +-logfilename.log.20201013
+  | +-logfilename.log.20201014
+  +-logfilename.log
+  +-main.go
+```
+
 
 
 
