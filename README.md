@@ -1,6 +1,8 @@
 # Log with Context and rpcid
 
-The goal is to have very simple log function to call and help us analyze the output by link all the function call with rpcid accross system
+The goal is to have very simple log function to call and help us analyze the output by link all the function call with rpcid accross system.
+
+This log is wrapper version of `https://github.com/sirupsen/logrus`
 
 ## Basic use
 This is the basic default use of the log out of the box
