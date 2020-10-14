@@ -60,9 +60,27 @@ From that output we can see the rpcid is same. We can use this rpcid information
 ## Change the output format
 Currently we have two format JSON format and Simple format. To change the format you can call this method before we call the first log. The default one is in JSON format
 ```
-log.UseJSONFormat()
-// or
-log.UseSimpleFormat()
+package main
+
+import (
+  "context"
+
+  "github.com/mirzaakhena/log"
+)
+
+func main() {
+
+  ctx := log.ContextWithRpcID(context.Background())
+
+  // log.UseJSONFormat()
+  log.UseSimpleFormat()
+
+  log.Info(ctx, "hello")
+  log.Warn(ctx, "world")
+  log.Error(ctx, "my name is %s", "mirza")
+
+}
+
 ```
 
 The sample output for Simple format is
@@ -71,8 +89,6 @@ The sample output for Simple format is
 1014 095518.829 [WARN] [1iqnii541bXcCIXkbJ3OMvxrx6R] [main.main:16] world
 1014 095518.829 [ERRO] [1iqnii541bXcCIXkbJ3OMvxrx6R] [main.main:17] my name is mirza
 ```
-
-
 
 ## Replace The RPCID Generator
 Currently rpcid is generate by `https://github.com/segmentio/ksuid`
