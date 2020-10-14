@@ -24,6 +24,29 @@ func main() {
 }
 ```
 
+The context can be from different previous service that call this service. This is sample code when using `https://github.com/gin-gonic/gin` framework
+
+```
+func TheController(c *gin.Context) {
+
+  previousCtx := c.Request.Context()
+  ctx := log.ContextWithRpcID(previousCtx)
+  log.Info(ctx, "hello")
+
+}
+```
+
+This is sample when using builtin http go
+```
+func TheController(w http.ResponseWriter, req *http.Request) {
+
+  previousCtx := req.Context()
+  ctx := log.ContextWithRpcID(previousCtx)
+  log.Info(ctx, "hello")
+
+}
+```
+
 This is the sample output format
 ```
 {"func":"main.main:18","level":"info","msg":"hello","rpcid":"1iqnii541bXcCIXkbJ3OMvxrx6R","time":"1014 095518.829"}
