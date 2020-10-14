@@ -15,11 +15,11 @@ import (
 
 func main() {
 
-	ctx := log.ContextWithRpcID(context.Background())
+  ctx := log.ContextWithRpcID(context.Background())
 
-	log.Info(ctx, "hello")
-	log.Warn(ctx, "world")
-	log.Error(ctx, "my name is %s", "mirza")
+  log.Info(ctx, "hello")
+  log.Warn(ctx, "world")
+  log.Error(ctx, "my name is %s", "mirza")
 
 }
 ```
