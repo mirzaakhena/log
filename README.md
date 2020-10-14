@@ -78,11 +78,18 @@ log.SetRpcIDFunc(func() string {
 ## Use the rotate file 
 If we want to have log file we can enable it by call this before first log is called
 ```
-path := "." // the current directory
+// the current directory
+path := "." 
+
+// log filename
 filename := "logfilename"
-maxAgeOfLogInDays := 7
+
+// after n max day. the file will deleted automatically
+maxAgeOfLogInDays := 7 
+
 log.UseRotateFile(path, filename, maxAgeOfLogInDays)
 log.Info(context.Background(), "hello")
+
 ```
 The output file will be like this
 ```
