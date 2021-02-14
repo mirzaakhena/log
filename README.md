@@ -1,6 +1,6 @@
-# Log with Context and rpcid
+# Log with Context and operationID
 
-The goal is to have very simple log function to call and help us analyze the output by link all the function call with rpcid accross system.
+The goal is to have very simple log function to call and help us analyze the output by link all the function call with operationID accross system.
 
 This log is wrapper version of `https://github.com/sirupsen/logrus`
 
@@ -17,7 +17,7 @@ import (
 
 func main() {
 
-  ctx := log.ContextWithRpcID(context.Background())
+  ctx := log.ContextWithOperationID(context.Background())
 
   log.Info(ctx, "hello")
   log.Warn(ctx, "world")
@@ -32,7 +32,7 @@ The context can be from different previous service that call this service. This 
 func TheController(c *gin.Context) {
 
   previousCtx := c.Request.Context()
-  ctx := log.ContextWithRpcID(previousCtx)
+  ctx := log.ContextWithOperationID(previousCtx)
   log.Info(ctx, "hello")
 
 }
@@ -43,7 +43,7 @@ This is sample when using builtin http go
 func TheController(w http.ResponseWriter, req *http.Request) {
 
   previousCtx := req.Context()
-  ctx := log.ContextWithRpcID(previousCtx)
+  ctx := log.ContextWithOperationID(previousCtx)
   log.Info(ctx, "hello")
 
 }
@@ -51,11 +51,11 @@ func TheController(w http.ResponseWriter, req *http.Request) {
 
 This is the sample output format
 ```
-{"func":"main.main:18","level":"info","msg":"hello","rpcid":"1iqnii541bXcCIXkbJ3OMvxrx6R","time":"1014 095518.829"}
-{"func":"main.main:19","level":"warning","msg":"world","rpcid":"1iqnii541bXcCIXkbJ3OMvxrx6R","time":"1014 095518.829"}
-{"func":"main.main:20","level":"error","msg":"my name is mirza","rpcid":"1iqnii541bXcCIXkbJ3OMvxrx6R","time":"1014 095518.829"}
+{"func":"main.main:18","level":"info","msg":"hello","opid":"1iqnii541bXcCIXkbJ3OMvxrx6R","time":"1014 095518.829"}
+{"func":"main.main:19","level":"warning","msg":"world","opid":"1iqnii541bXcCIXkbJ3OMvxrx6R","time":"1014 095518.829"}
+{"func":"main.main:20","level":"error","msg":"my name is mirza","opid":"1iqnii541bXcCIXkbJ3OMvxrx6R","time":"1014 095518.829"}
 ```
-From that output we can see the rpcid is same. We can use this rpcid information to do grep from console and by collect the same rpcid we can trace it easily. We also print the method call complete with line of code.
+From that output we can see the opid is same. We can use this opid information to do grep from console and by collect the same opid we can trace it easily. We also print the method call complete with line of code.
 
 ## Change the output format
 Currently we have two format JSON format and Simple format. To change the format you can call this method before we call the first log. The default one is in JSON format
@@ -70,7 +70,7 @@ import (
 
 func main() {
 
-  ctx := log.ContextWithRpcID(context.Background())
+  ctx := log.ContextWithOperationID(context.Background())
 
   // log.UseJSONFormat()
   log.UseSimpleFormat()
@@ -90,13 +90,13 @@ The sample output for Simple format is
 1014 095518.829 [ERRO] [1iqnii541bXcCIXkbJ3OMvxrx6R] [main.main:17] my name is mirza
 ```
 
-## Replace The RPCID Generator
-Currently rpcid is generate by `https://github.com/segmentio/ksuid`
+## Replace The OperationID Generator
+Currently operationID is generate by `https://github.com/segmentio/ksuid`
 
 You can replace the function generation by call this method at the first place before any log is called. In this example we replace it with uuid from  `https://github.com/satori/go.uuid`
 
 ```
-log.SetRpcIDFunc(func() string {
+log.SetOperationIDFunc(func() string {
   x, _ := uuid.NewV4()
   return x.String()
 })

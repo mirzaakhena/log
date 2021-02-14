@@ -9,11 +9,6 @@ func Info(ctx context.Context, message string, args ...interface{}) {
 	getLogImpl().Info(ctx, message, args...)
 }
 
-// Warn is
-func Warn(ctx context.Context, message string, args ...interface{}) {
-	getLogImpl().Warn(ctx, message, args...)
-}
-
 // Error is
 func Error(ctx context.Context, message string, args ...interface{}) {
 	getLogImpl().Error(ctx, message, args...)
@@ -32,15 +27,15 @@ func UseSimpleFormat() {
 	setSimpleFormat()
 }
 
-func SetRpcIDFunc(f func() string) {
-	rpcidFunc = f
+func SetOperationIDFunc(f func() string) {
+	operationIDFunc = f
 }
 
-func ContextWithRpcID(ctx context.Context) context.Context {
-	rpcIDInterface := ctx.Value(rpcidField)
-	if rpcIDInterface == nil {
-		initRpcFunc()
-		return context.WithValue(ctx, rpcidField, rpcidFunc())
+func ContextWithOperationID(ctx context.Context) context.Context {
+	opIDInterface := ctx.Value(operationIDField)
+	if opIDInterface == nil {
+		initOperationIDFunc()
+		return context.WithValue(ctx, operationIDField, operationIDFunc())
 	}
 	return ctx
 }

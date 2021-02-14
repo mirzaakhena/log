@@ -19,8 +19,8 @@ import (
 type contextType string
 
 const funcConst = "func"
-const rpcidConst = "rpcid"
-const rpcidField = contextType(rpcidConst)
+const operationIDConst = "opID"
+const operationIDField = contextType(operationIDConst)
 
 func setJSONFormat() {
 	format = &logrus.JSONFormatter{
@@ -33,19 +33,19 @@ func setSimpleFormat() {
 		NoColors:        true,
 		HideKeys:        true,
 		TimestampFormat: "0102 150405.000",
-		FieldsOrder:     []string{"rpcid", "func"},
+		FieldsOrder:     []string{"operationID", "func"},
 	}
 }
 
 var (
-	singleton     sync.Once
-	defaultLogger logrusImpl
-	useFile       bool
-	path          string
-	name          string
-	maxAge        int
-	format        logrus.Formatter
-	rpcidFunc     func() string
+	singleton       sync.Once
+	defaultLogger   logrusImpl
+	useFile         bool
+	path            string
+	name            string
+	maxAge          int
+	format          logrus.Formatter
+	operationIDFunc func() string
 )
 
 type logrusImpl struct {
@@ -65,9 +65,9 @@ func initFormat() {
 	}
 }
 
-func initRpcFunc() {
-	if rpcidFunc == nil {
-		rpcidFunc = func() string {
+func initOperationIDFunc() {
+	if operationIDFunc == nil {
+		operationIDFunc = func() string {
 			return ksuid.New().String()
 		}
 	}
@@ -78,7 +78,7 @@ func getLogImpl() Logger {
 
 		initFormat()
 
-		initRpcFunc()
+		initOperationIDFunc()
 
 		defaultLogger = logrusImpl{theLogger: logrus.New()}
 		defaultLogger.theLogger.SetFormatter(format)
@@ -97,7 +97,6 @@ func getLogImpl() Logger {
 		defaultLogger.theLogger.AddHook(lfshook.NewHook(
 			lfshook.WriterMap{
 				logrus.InfoLevel:  writer,
-				logrus.WarnLevel:  writer,
 				logrus.ErrorLevel: writer,
 			},
 			defaultLogger.theLogger.Formatter,
@@ -108,8 +107,8 @@ func getLogImpl() Logger {
 	return &defaultLogger
 }
 
-func getFunctionCall() string {
-	pc, _, line, ok := runtime.Caller(4)
+func getFunctionCall(skip int) string {
+	pc, _, line, ok := runtime.Caller(skip)
 	if !ok {
 		return ""
 	}
@@ -118,19 +117,19 @@ func getFunctionCall() string {
 	return fmt.Sprintf("%s:%d", funcName[x+1:], line)
 }
 
-func fetchRpcID(ctx context.Context) string {
+func fetchOperationID(ctx context.Context) string {
 
-	rpcidInterface := ctx.Value(rpcidField)
-	if rpcidInterface == nil {
-		return "notset"
+	operationIDInterface := ctx.Value(operationIDField)
+	if operationIDInterface == nil {
+		return "-"
 	}
 
-	rpcid, ok := rpcidInterface.(string)
+	operationID, ok := operationIDInterface.(string)
 	if !ok {
-		return "notset"
+		return "-"
 	}
 
-	return rpcid
+	return operationID
 }
 
 func (x *logrusImpl) additionalField(ctx context.Context) *logrus.Entry {
@@ -139,12 +138,12 @@ func (x *logrusImpl) additionalField(ctx context.Context) *logrus.Entry {
 
 	theLogger = x.theLogger.WithContext(ctx)
 
-	rpcID := fetchRpcID(ctx)
-	if rpcID != "" {
-		theLogger = theLogger.WithField(rpcidConst, rpcID)
+	operationID := fetchOperationID(ctx)
+	if operationID != "" {
+		theLogger = theLogger.WithField(operationIDConst, operationID)
 	}
 
-	funcCall := getFunctionCall()
+	funcCall := getFunctionCall(4)
 	if funcCall != "" {
 		theLogger = theLogger.WithField(funcConst, funcCall)
 	}
@@ -155,11 +154,6 @@ func (x *logrusImpl) additionalField(ctx context.Context) *logrus.Entry {
 func (x *logrusImpl) Info(ctx context.Context, message string, args ...interface{}) {
 	logMessage := fmt.Sprintf(message, args...)
 	x.additionalField(ctx).Info(logMessage)
-}
-
-func (x *logrusImpl) Warn(ctx context.Context, message string, args ...interface{}) {
-	logMessage := fmt.Sprintf(message, args...)
-	x.additionalField(ctx).Warn(logMessage)
 }
 
 func (x *logrusImpl) Error(ctx context.Context, message string, args ...interface{}) {
